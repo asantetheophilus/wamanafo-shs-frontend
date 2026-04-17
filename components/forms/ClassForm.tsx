@@ -13,6 +13,7 @@ import { createClassSchema, updateClassSchema } from "@/lib/validators/class";
 import { cn } from "@/lib/utils";
 import type { CreateClassInput, UpdateClassInput } from "@/lib/validators/class";
 import type { ClassDTO } from "@/types/class";
+import { apiFetch } from "@/lib/api-client";
 import type { SelectOption } from "@/types/common";
 
 function Field({ label, error, required, children }: {
@@ -50,18 +51,15 @@ export function CreateClassForm({
     useForm<CreateClassInput>({ resolver: zodResolver(createClassSchema) });
 
   async function onSubmit(data: CreateClassInput) {
-    const res = await fetch("/api/v1/classes", {
-      method: "POST", headers: { "Content-Type": "application/json" },
+    const res = await apiFetch<{ id: string }>("/api/v1/classes", {
+      method: "POST",
       body: JSON.stringify(data),
     });
-    const json = await res.json();
-    if (!res.ok) {
-      if (json.fields) Object.entries(json.fields).forEach(([f, m]) =>
-        setError(f as keyof CreateClassInput, { message: String(m) }));
-      else setError("root", { message: json.error ?? "An error occurred." });
+    if (!res.success) {
+      setError("root", { message: res.error ?? "An error occurred." });
       return;
     }
-    onSuccess(json.data.id);
+    onSuccess(res.data.id);
   }
 
   return (
@@ -136,13 +134,12 @@ export function EditClassForm({ cls, teacherOptions, onSuccess }: EditClassFormP
   }, [cls, reset]);
 
   async function onSubmit(data: UpdateClassInput) {
-    const res = await fetch(`/api/v1/classes/${cls.id}`, {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
+    const res = await apiFetch(`/api/v1/classes/${cls.id}`, {
+      method: "PATCH",
       body: JSON.stringify(data),
     });
-    const json = await res.json();
-    if (!res.ok) {
-      setError("root", { message: json.error ?? "Update failed." });
+    if (!res.success) {
+      setError("root", { message: res.error ?? "Update failed." });
       return;
     }
     onSuccess();

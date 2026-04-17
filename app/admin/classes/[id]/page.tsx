@@ -12,6 +12,7 @@ import { useClass, classKeys } from "@/hooks/useClasses";
 import { EditClassForm } from "@/components/forms/ClassForm";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { apiFetch } from "@/lib/api-client";
 import type { SelectOption } from "@/types/common";
 
 export default function ClassDetailPage() {
@@ -23,8 +24,8 @@ export default function ClassDetailPage() {
   const { data: teachersData } = useQuery({
     queryKey: ["teachers", "options"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/teachers?pageSize=100&isActive=true");
-      return (await res.json()).data as { items: Array<{ id: string; firstName: string; lastName: string; staffId: string }> };
+      const res = await apiFetch<{ items: Array<{ id: string; firstName: string; lastName: string; staffId: string }> }>("/api/v1/teachers?pageSize=100&isActive=true");
+      return res.success ? res.data : { items: [] };
     },
   });
 
@@ -33,8 +34,8 @@ export default function ClassDetailPage() {
     queryKey: ["class-roster", id, cls?.year.id],
     queryFn: async () => {
       if (!cls?.year.id) return { data: [] };
-      const res = await fetch(`/api/v1/classes/${id}?resource=students&yearId=${cls.year.id}`);
-      return (await res.json()) as { data: Array<{ student: { id: string; indexNumber: string; status: string; user: { firstName: string; lastName: string } } }> };
+      const res = await apiFetch<Array<{ student: { id: string; indexNumber: string; status: string; user: { firstName: string; lastName: string } } }>>(`/api/v1/classes/${id}?resource=students&yearId=${cls.year.id}`);
+      return res.success ? { data: res.data } : { data: [] };
     },
     enabled: !!cls?.year.id,
   });

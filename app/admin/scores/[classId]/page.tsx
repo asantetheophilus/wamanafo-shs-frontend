@@ -16,6 +16,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { formatDisplayScore } from "@/lib/grading";
 import { formatPosition } from "@/lib/ranking";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 import type { ClassResultRow, SubjectRankingRow } from "@/types/report";
 
 export default function ClassResultsPage() {
@@ -30,8 +31,8 @@ export default function ClassResultsPage() {
   const { data: classData } = useQuery({
     queryKey: ["class", classId],
     queryFn: async () => {
-      const res = await fetch(`/api/v1/classes/${classId}`);
-      return (await res.json()).data as { name: string; programme: { id: string; name: string }; programmeId: string };
+      const res = await apiFetch<{ name: string; programme: { id: string; name: string }; programmeId: string }>(`/api/v1/classes/${classId}`);
+      return res.success ? res.data : null;
     },
     enabled: !!classId,
   });
@@ -39,17 +40,18 @@ export default function ClassResultsPage() {
   // Fetch terms
   const { data: termsData } = useQuery({
     queryKey: ["terms", "options"],
-    queryFn:  async () => (await fetch("/api/v1/terms")).json()
-      .then((r: { data: { items: Array<{ id: string; name: string; isCurrent: boolean }> } }) => r.data),
+    queryFn: async () => {
+      const res = await apiFetch<{ items: Array<{ id: string; name: string; isCurrent: boolean }> }>("/api/v1/terms");
+      return res.success ? res.data : { items: [] };
+    },
   });
 
   // Fetch subjects for this programme
   const { data: subjectsData } = useQuery({
     queryKey: ["subjects", "for-class", classId],
     queryFn: async () => {
-      if (!classData?.programmeId) return { items: [] };
-      const res = await fetch(`/api/v1/subjects?pageSize=50`);
-      return (await res.json()).data as { items: Array<{ id: string; name: string; code: string; isCore: boolean }> };
+      const res = await apiFetch<{ items: Array<{ id: string; name: string; code: string; isCore: boolean }> }>("/api/v1/subjects?pageSize=50");
+      return res.success ? res.data : { items: [] };
     },
     enabled: !!classData?.programmeId,
   });

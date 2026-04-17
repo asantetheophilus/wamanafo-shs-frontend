@@ -13,6 +13,7 @@ import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { createStudentSchema } from "@/lib/validators/student";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 import type { StudentDTO } from "@/types/student";
 
 // Extend base schema with password for create; optional for edit
@@ -91,27 +92,26 @@ export function CreateStudentForm({
   });
 
   async function onSubmit(data: CreateFormValues) {
-    const res = await fetch("/api/v1/students", {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify(data),
+    // Strip empty optional strings so backend doesn't see ""
+    const payload = {
+      ...data,
+      dateOfBirth: data.dateOfBirth || undefined,
+      classId:     data.classId     || undefined,
+      yearId:      data.yearId      || undefined,
+      gender:      data.gender      || undefined,
+    };
+
+    const res = await apiFetch<{ id: string }>("/api/v1/students", {
+      method: "POST",
+      body:   JSON.stringify(payload),
     });
 
-    const json = await res.json();
-
-    if (!res.ok) {
-      if (json.fields) {
-        // Field-level validation errors
-        Object.entries(json.fields).forEach(([field, msg]) => {
-          setError(field as keyof CreateFormValues, { message: String(msg) });
-        });
-      } else {
-        setError("root", { message: json.error ?? "An error occurred." });
-      }
+    if (!res.success) {
+      setError("root", { message: res.error ?? "An error occurred." });
       return;
     }
 
-    onSuccess(json.data.id);
+    onSuccess(res.data.id);
   }
 
   return (
@@ -276,22 +276,20 @@ export function EditStudentForm({ student, onSuccess }: EditStudentFormProps) {
   }, [student, reset]);
 
   async function onSubmit(data: EditFormValues) {
-    const res = await fetch(`/api/v1/students/${student.id}`, {
-      method:  "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify(data),
+    // Strip empty optional strings before sending
+    const payload = {
+      ...data,
+      dateOfBirth: data.dateOfBirth || undefined,
+      gender:      data.gender      || undefined,
+    };
+
+    const res = await apiFetch(`/api/v1/students/${student.id}`, {
+      method: "PATCH",
+      body:   JSON.stringify(payload),
     });
 
-    const json = await res.json();
-
-    if (!res.ok) {
-      if (json.fields) {
-        Object.entries(json.fields).forEach(([field, msg]) => {
-          setError(field as keyof EditFormValues, { message: String(msg) });
-        });
-      } else {
-        setError("root", { message: json.error ?? "Update failed." });
-      }
+    if (!res.success) {
+      setError("root", { message: res.error ?? "Update failed." });
       return;
     }
 

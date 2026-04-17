@@ -12,6 +12,7 @@ import { useClasses } from "@/hooks/useClasses";
 import { ClassTable } from "@/components/tables/ClassTable";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { useDebounce } from "@/hooks/useDebounce";
+import { apiFetch } from "@/lib/api-client";
 
 export default function ClassesPage() {
   const [page, setPage]               = useState(1);
@@ -23,11 +24,17 @@ export default function ClassesPage() {
   // Fetch filter options
   const { data: yearsData }      = useQuery({
     queryKey: ["academic-years", "options"],
-    queryFn:  async () => (await fetch("/api/v1/academic-years")).json().then((r: { data: { items: Array<{ id: string; name: string; isCurrent: boolean }> } }) => r.data),
+    queryFn:  async () => {
+      const res = await apiFetch<{ items: Array<{ id: string; name: string; isCurrent: boolean }> }>("/api/v1/academic-years");
+      return res.success ? res.data : { items: [] };
+    },
   });
   const { data: programmesData } = useQuery({
     queryKey: ["programmes", "options"],
-    queryFn:  async () => (await fetch("/api/v1/programmes")).json().then((r: { data: { items: Array<{ id: string; name: string }> } }) => r.data),
+    queryFn:  async () => {
+      const res = await apiFetch<{ items: Array<{ id: string; name: string }> }>("/api/v1/programmes");
+      return res.success ? res.data : { items: [] };
+    },
   });
 
   const { data, isLoading, isError } = useClasses({

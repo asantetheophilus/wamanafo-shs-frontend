@@ -13,6 +13,7 @@ import { createTeacherSchema, updateTeacherSchema } from "@/lib/validators/teach
 import { cn } from "@/lib/utils";
 import type { CreateTeacherInput, UpdateTeacherInput } from "@/lib/validators/teacher";
 import type { TeacherDTO } from "@/types/teacher";
+import { apiFetch } from "@/lib/api-client";
 
 // ── Shared field component ────────────────────────────────────
 
@@ -70,28 +71,19 @@ export function CreateTeacherForm({ onSuccess }: CreateTeacherFormProps) {
   });
 
   async function onSubmit(data: CreateTeacherInput) {
-    const res = await fetch("/api/v1/teachers", {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify(data),
+    const res = await apiFetch<{ id: string }>("/api/v1/teachers", {
+      method: "POST",
+      body:   JSON.stringify(data),
     });
 
-    const json = await res.json();
-
-    if (!res.ok) {
-      if (json.fields) {
-        Object.entries(json.fields).forEach(([field, msg]) => {
-          setError(field as keyof CreateTeacherInput, { message: String(msg) });
-        });
-      } else {
-        setError("root" as keyof CreateTeacherInput, {
-          message: json.error ?? "An error occurred.",
-        } as { message: string });
-      }
+    if (!res.success) {
+      setError("root" as keyof CreateTeacherInput, {
+        message: res.error ?? "An error occurred.",
+      } as { message: string });
       return;
     }
 
-    onSuccess(json.data.id);
+    onSuccess(res.data.id);
   }
 
   return (
@@ -219,24 +211,15 @@ export function EditTeacherForm({ teacher, onSuccess }: EditTeacherFormProps) {
   }, [teacher, reset]);
 
   async function onSubmit(data: UpdateTeacherInput) {
-    const res = await fetch(`/api/v1/teachers/${teacher.id}`, {
-      method:  "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify(data),
+    const res = await apiFetch(`/api/v1/teachers/${teacher.id}`, {
+      method: "PATCH",
+      body:   JSON.stringify(data),
     });
 
-    const json = await res.json();
-
-    if (!res.ok) {
-      if (json.fields) {
-        Object.entries(json.fields).forEach(([field, msg]) => {
-          setError(field as keyof UpdateTeacherInput, { message: String(msg) });
-        });
-      } else {
-        setError("root" as keyof UpdateTeacherInput, {
-          message: json.error ?? "Update failed.",
-        } as { message: string });
-      }
+    if (!res.success) {
+      setError("root" as keyof UpdateTeacherInput, {
+        message: res.error ?? "Update failed.",
+      } as { message: string });
       return;
     }
 

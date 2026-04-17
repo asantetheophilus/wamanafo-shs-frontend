@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { CreateClassForm } from "@/components/forms/ClassForm";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { apiFetch } from "@/lib/api-client";
 import type { SelectOption } from "@/types/common";
 
 export default function NewClassPage() {
@@ -16,24 +17,24 @@ export default function NewClassPage() {
   const { data: yearsData } = useQuery({
     queryKey: ["academic-years", "options"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/academic-years");
-      return (await res.json()).data as { items: Array<{ id: string; name: string; isCurrent: boolean }> };
+      const res = await apiFetch<{ items: Array<{ id: string; name: string; isCurrent: boolean }> }>("/api/v1/academic-years");
+      return res.success ? res.data : { items: [] };
     },
   });
 
   const { data: programmesData } = useQuery({
     queryKey: ["programmes", "options"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/programmes");
-      return (await res.json()).data as { items: Array<{ id: string; name: string }> };
+      const res = await apiFetch<{ items: Array<{ id: string; name: string }> }>("/api/v1/programmes");
+      return res.success ? res.data : { items: [] };
     },
   });
 
   const { data: teachersData } = useQuery({
     queryKey: ["teachers", "options"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/teachers?pageSize=100&isActive=true");
-      return (await res.json()).data as { items: Array<{ id: string; firstName: string; lastName: string; staffId: string }> };
+      const res = await apiFetch<{ items: Array<{ id: string; firstName: string; lastName: string; staffId: string }> }>("/api/v1/teachers?pageSize=100&isActive=true");
+      return res.success ? res.data : { items: [] };
     },
   });
 

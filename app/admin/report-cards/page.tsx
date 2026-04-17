@@ -20,6 +20,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { formatPosition } from "@/lib/ranking";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 
 export default function AdminReportCardsPage() {
   const [classId, setClassId] = useState("");
@@ -28,13 +29,17 @@ export default function AdminReportCardsPage() {
 
   const { data: classesData } = useQuery({
     queryKey: ["classes", "options"],
-    queryFn:  async () => (await fetch("/api/v1/classes?pageSize=100")).json()
-      .then((r: { data: { items: Array<{ id: string; name: string }> } }) => r.data),
+    queryFn:  async () => {
+      const res = await apiFetch<{ items: Array<{ id: string; name: string }> }>("/api/v1/classes?pageSize=100");
+      return res.success ? res.data : { items: [] };
+    },
   });
   const { data: termsData } = useQuery({
     queryKey: ["terms", "options"],
-    queryFn:  async () => (await fetch("/api/v1/terms")).json()
-      .then((r: { data: { items: Array<{ id: string; name: string; isCurrent: boolean }> } }) => r.data),
+    queryFn:  async () => {
+      const res = await apiFetch<{ items: Array<{ id: string; name: string; isCurrent: boolean }> }>("/api/v1/terms");
+      return res.success ? res.data : { items: [] };
+    },
   });
 
   const canLoad = !!classId && !!termId;

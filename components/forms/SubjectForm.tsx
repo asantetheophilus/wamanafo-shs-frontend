@@ -13,6 +13,7 @@ import { createSubjectSchema, updateSubjectSchema } from "@/lib/validators/subje
 import { cn } from "@/lib/utils";
 import type { CreateSubjectInput, UpdateSubjectInput } from "@/lib/validators/subject";
 import type { SubjectDTO } from "@/types/class";
+import { apiFetch } from "@/lib/api-client";
 
 function Field({ label, error, required, hint, children }: {
   label: string; error?: string; required?: boolean; hint?: string; children: React.ReactNode;
@@ -41,18 +42,15 @@ export function CreateSubjectForm({ onSuccess }: { onSuccess: (id: string) => vo
     useForm<CreateSubjectInput>({ resolver: zodResolver(createSubjectSchema) });
 
   async function onSubmit(data: CreateSubjectInput) {
-    const res = await fetch("/api/v1/subjects", {
-      method: "POST", headers: { "Content-Type": "application/json" },
+    const res = await apiFetch<{ id: string }>("/api/v1/subjects", {
+      method: "POST",
       body: JSON.stringify(data),
     });
-    const json = await res.json();
-    if (!res.ok) {
-      if (json.fields) Object.entries(json.fields).forEach(([f, m]) =>
-        setError(f as keyof CreateSubjectInput, { message: String(m) }));
-      else setError("root", { message: json.error ?? "An error occurred." });
+    if (!res.success) {
+      setError("root", { message: res.error ?? "An error occurred." });
       return;
     }
-    onSuccess(json.data.id);
+    onSuccess(res.data.id);
   }
 
   return (
@@ -123,12 +121,11 @@ export function EditSubjectForm({ subject, onSuccess }: { subject: SubjectDTO; o
   }, [subject, reset]);
 
   async function onSubmit(data: UpdateSubjectInput) {
-    const res = await fetch(`/api/v1/subjects/${subject.id}`, {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
+    const res = await apiFetch(`/api/v1/subjects/${subject.id}`, {
+      method: "PATCH",
       body: JSON.stringify(data),
     });
-    const json = await res.json();
-    if (!res.ok) { setError("root", { message: json.error ?? "Update failed." }); return; }
+    if (!res.success) { setError("root", { message: res.error ?? "Update failed." }); return; }
     onSuccess();
   }
 

@@ -15,6 +15,7 @@ import { Loader2, CheckCircle, AlertTriangle, Settings } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { cn } from "@/lib/utils";
+import { apiFetch, getToken } from "@/lib/api-client";
 
 interface TermRow {
   id:               string;
@@ -69,14 +70,12 @@ function TermEditForm({
 
   async function onSubmit(data: TermEditValues) {
     setServerMsg(null);
-    const res = await fetch(`/api/v1/terms/${term.id}`, {
+    const res = await apiFetch(`/api/v1/terms/${term.id}`, {
       method:  "PATCH",
-      headers: { "Content-Type": "application/json" },
       body:    JSON.stringify(data),
     });
-    const json = await res.json();
-    if (!res.ok) {
-      setServerMsg({ type: "error", text: json.error ?? "Update failed." });
+    if (!res.success) {
+      setServerMsg({ type: "error", text: res.error ?? "Update failed." });
       return;
     }
     setServerMsg({ type: "success", text: "Term configuration saved." });
@@ -169,8 +168,8 @@ export default function AdminTermsPage() {
   const { data: termsData, isLoading } = useQuery({
     queryKey: ["terms", "all"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/terms");
-      return (await res.json()).data as { items: TermRow[] };
+      const res = await apiFetch<{ items: TermRow[] }>("/api/v1/terms");
+      return res.success ? res.data : { items: [] };
     },
   });
 

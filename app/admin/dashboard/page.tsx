@@ -14,6 +14,7 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { PendingActionsPanel } from "@/components/dashboard/PendingActionsPanel";
 import { GradeDistributionChart } from "@/components/dashboard/GradeDistributionChart";
 import { ClassPerformanceChart } from "@/components/dashboard/ClassPerformanceChart";
+import { apiFetch } from "@/lib/api-client";
 
 
 interface DashboardStats {
@@ -40,16 +41,16 @@ function useDashboardStats() {
   return useQuery({
     queryKey: ["analytics", "dashboard"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/analytics");
-      if (!res.ok) throw new Error("Failed to load dashboard stats");
-      return (await res.json()).data as DashboardStats;
+      const res = await apiFetch<DashboardStats>("/api/v1/analytics");
+      if (!res.success) throw new Error(res.error ?? "Failed to load dashboard stats");
+      return res.data;
     },
     refetchInterval: 60_000,
   });
 }
 
 export default function AdminDashboardPage() {
-  const { data: stats, isLoading } = useDashboardStats();
+  const { data: stats, isLoading, isError } = useDashboardStats();
 
   return (
     <div className="px-8 py-7 space-y-8">
@@ -61,6 +62,19 @@ export default function AdminDashboardPage() {
           </p>
         )}
       </div>
+
+      {/* Error state */}
+      {isError && (
+        <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-4">
+          <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-red-800">Could not load dashboard data</p>
+            <p className="text-xs text-red-600 mt-0.5">
+              Check your connection or try refreshing the page.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-4">

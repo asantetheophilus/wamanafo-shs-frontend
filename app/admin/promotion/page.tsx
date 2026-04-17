@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, CheckCircle, MinusCircle, Users } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 
 const REC_CONFIG = {
   PROMOTE:    { label: "Promote",    icon: CheckCircle,  colour: "text-green-700 bg-green-50 border-green-200" },
@@ -43,17 +44,19 @@ export default function PromotionPage() {
 
   const { data: classesData } = useQuery({
     queryKey: ["classes", "options"],
-    queryFn: async () => (await fetch("/api/v1/classes?pageSize=100")).json()
-      .then((r: { data: { items: Array<{ id: string; name: string }> } }) => r.data),
+    queryFn: async () => {
+      const res = await apiFetch<{ items: Array<{ id: string; name: string }> }>("/api/v1/classes?pageSize=100");
+      return res.success ? res.data : { items: [] };
+    },
   });
 
   // Only show Term 3 terms
   const { data: termsData } = useQuery({
     queryKey: ["terms", "term3"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/terms");
-      const data = (await res.json()).data as { items: Array<{ id: string; name: string; number: number; isCurrent: boolean }> };
-      return { ...data, items: data.items.filter((t) => t.number === 3) };
+      const res = await apiFetch<{ items: Array<{ id: string; name: string; number: number; isCurrent: boolean }> }>("/api/v1/terms");
+      if (!res.success) return { items: [] };
+      return { ...res.data, items: res.data.items.filter((t) => t.number === 3) };
     },
   });
 
@@ -62,17 +65,17 @@ export default function PromotionPage() {
   const { data: results, isLoading, isError } = useQuery({
     queryKey: ["promotion", classId, termId, minCore, minElective, minAttendance, minAverage],
     queryFn: async () => {
-      const url = new URL("/api/v1/promotion", window.location.origin);
-      url.searchParams.set("classId",       classId);
-      url.searchParams.set("termId",        termId);
-      url.searchParams.set("minCore",       String(minCore));
-      url.searchParams.set("minElective",   String(minElective));
-      url.searchParams.set("minAttendance", String(minAttendance));
-      url.searchParams.set("minAverage",    String(minAverage));
-      const res = await fetch(url.toString());
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Failed to compute recommendations");
-      return json.data as StudentPromotionResult[];
+      const qs = new URLSearchParams({
+        classId,
+        termId,
+        minCore:       String(minCore),
+        minElective:   String(minElective),
+        minAttendance: String(minAttendance),
+        minAverage:    String(minAverage),
+      }).toString();
+      const res = await apiFetch<StudentPromotionResult[]>(`/api/v1/promotion?${qs}`);
+      if (!res.success) throw new Error(res.error ?? "Failed to compute recommendations");
+      return res.data;
     },
     enabled: canLoad,
   });

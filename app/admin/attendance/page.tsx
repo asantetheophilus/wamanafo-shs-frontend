@@ -10,6 +10,7 @@ import { useAttendanceSummary } from "@/hooks/useAttendance";
 import { AttendanceSummaryTable } from "@/components/tables/AttendanceTable";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { ClipboardList } from "lucide-react";
+import { apiFetch } from "@/lib/api-client";
 
 export default function AdminAttendancePage() {
   const [classId, setClassId] = useState("");
@@ -18,16 +19,16 @@ export default function AdminAttendancePage() {
   const { data: classesData } = useQuery({
     queryKey: ["classes", "options"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/classes?pageSize=100");
-      return (await res.json()).data as { items: Array<{ id: string; name: string }> };
+      const res = await apiFetch<{ items: Array<{ id: string; name: string }> }>("/api/v1/classes?pageSize=100");
+      return res.success ? res.data : { items: [] };
     },
   });
 
   const { data: termsData } = useQuery({
     queryKey: ["terms", "options"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/terms");
-      return (await res.json()).data as { items: Array<{ id: string; name: string; isCurrent: boolean }> };
+      const res = await apiFetch<{ items: Array<{ id: string; name: string; isCurrent: boolean }> }>("/api/v1/terms");
+      return res.success ? res.data : { items: [] };
     },
   });
 
