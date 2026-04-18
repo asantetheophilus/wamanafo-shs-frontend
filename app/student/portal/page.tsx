@@ -1,17 +1,47 @@
 // ============================================================
-// Wamanafo SHS — Student Portal Dashboard
+// Wamanafo SHS — Student Portal Dashboard (Liquid UI)
 // ============================================================
-
 "use client";
 
 import Link from "next/link";
-import { FileText, BookOpen, ClipboardList } from "lucide-react";
+import { FileText, BookOpen, ClipboardList, KeyRound, ArrowRight } from "lucide-react";
 import { useStudentOverview } from "@/hooks/useStudentPortal";
 import { PageHeader } from "@/components/shared/PageHeader";
-import { cn } from "@/lib/utils";
+import { getInitials } from "@/lib/utils";
 
 export default function StudentPortalPage() {
   const { data: overview, isLoading } = useStudentOverview();
+
+  const CARDS = [
+    {
+      href:  "/student/report-cards",
+      icon:  FileText,
+      label: "Report Cards",
+      desc:  overview ? `${overview.publishedReportCards} published` : "View results",
+      bg:    "bg-teal-50 text-teal-700",
+    },
+    {
+      href:  "/student/scores",
+      icon:  BookOpen,
+      label: "My Scores",
+      desc:  "Approved subject scores",
+      bg:    "bg-amber-50 text-amber-700",
+    },
+    {
+      href:  "/student/attendance",
+      icon:  ClipboardList,
+      label: "Attendance",
+      desc:  "Term attendance record",
+      bg:    "bg-slate-100 text-slate-600",
+    },
+    {
+      href:  "/student/change-password",
+      icon:  KeyRound,
+      label: "Change Password",
+      desc:  "Update your password",
+      bg:    "bg-blue-50 text-blue-700",
+    },
+  ];
 
   return (
     <div>
@@ -20,72 +50,62 @@ export default function StudentPortalPage() {
         description="Your academic dashboard"
       />
 
-      <div className="px-8 py-6 space-y-6">
-        {/* Student info card */}
-        {overview && (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center text-xl font-bold shrink-0">
-                {overview.student.user.firstName[0]}{overview.student.user.lastName[0]}
+      <div className="page-shell">
+        {/* Student identity card */}
+        {isLoading ? (
+          <div className="skeleton h-32" />
+        ) : overview && (
+          <div className="rounded-2xl overflow-hidden relative"
+            style={{ background: "linear-gradient(135deg,#0D5E6E 0%,#0a4a56 60%,#071e25 100%)" }}>
+            <div className="absolute inset-0 bg-cover bg-center opacity-10"
+              style={{ backgroundImage: "url('/school-entrance.jpg')" }} />
+            <div className="relative z-10 px-7 py-6 flex items-center gap-5">
+              <div className="w-16 h-16 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center text-xl font-bold text-white shrink-0 backdrop-blur-sm">
+                {getInitials(`${overview.student.user.firstName} ${overview.student.user.lastName}`)}
               </div>
-              <div>
-                <h2 className="text-lg font-semibold text-slate-800">
+              <div className="flex-1 min-w-0">
+                <p className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-0.5">Student</p>
+                <h2 className="text-white text-xl font-bold leading-tight">
                   {overview.student.user.lastName}, {overview.student.user.firstName}
                 </h2>
-                <p className="text-sm text-slate-500 font-mono">{overview.student.indexNumber}</p>
+                <p className="text-white/60 font-mono text-sm mt-0.5">{overview.student.indexNumber}</p>
               </div>
-            </div>
-            <div className="mt-5 grid grid-cols-4 gap-4 pt-4 border-t border-slate-100">
-              {[
-                { label: "Class",        value: overview.currentClass     ?? "—" },
-                { label: "Programme",    value: overview.currentProgramme ?? "—" },
-                { label: "Year",         value: overview.currentYear      ?? "—" },
-                { label: "Current Term", value: overview.currentTerm      ?? "—" },
-              ].map((f) => (
-                <div key={f.label}>
-                  <p className="text-xs text-slate-400 uppercase tracking-wide">{f.label}</p>
-                  <p className="text-sm font-semibold text-slate-800 mt-0.5">{f.value}</p>
-                </div>
-              ))}
+              <div className="hidden sm:grid grid-cols-2 gap-x-8 gap-y-2 text-right shrink-0">
+                {[
+                  { label: "Class",   value: overview.currentClass     ?? "—" },
+                  { label: "Programme", value: overview.currentProgramme ?? "—" },
+                  { label: "Year",    value: overview.currentYear      ?? "—" },
+                  { label: "Term",    value: overview.currentTerm      ?? "—" },
+                ].map((f) => (
+                  <div key={f.label}>
+                    <p className="text-white/40 text-xs uppercase tracking-wide">{f.label}</p>
+                    <p className="text-white font-semibold text-sm mt-0.5">{f.value}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Quick links */}
-        <div className="grid grid-cols-3 gap-4">
-          <PortalCard href="/student/report-cards" icon={FileText}
-            title="Report Cards"
-            description={overview ? `${overview.publishedReportCards} published` : "View results"}
-            accent="teal" />
-          <PortalCard href="/student/scores" icon={BookOpen}
-            title="My Scores" description="Approved subject scores" accent="yellow" />
-          <PortalCard href="/student/attendance" icon={ClipboardList}
-            title="Attendance" description="Term attendance record" accent="slate" />
+        {/* Quick navigation cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {CARDS.map((card) => (
+            <Link key={card.href} href={card.href}
+              className="card p-5 flex flex-col gap-3 hover:shadow-md group cursor-pointer">
+              <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${card.bg}`}>
+                <card.icon className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="font-bold text-slate-800 group-hover:text-teal-700 transition-colors leading-tight">
+                  {card.label}
+                </p>
+                <p className="text-xs text-slate-500 mt-0.5">{card.desc}</p>
+              </div>
+              <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-teal-500 transition-colors mt-auto" />
+            </Link>
+          ))}
         </div>
       </div>
     </div>
-  );
-}
-
-function PortalCard({ href, icon: Icon, title, description, accent }: {
-  href: string; icon: React.ElementType; title: string; description: string;
-  accent: "teal" | "yellow" | "slate";
-}) {
-  const colors = {
-    teal:   "bg-teal-50 text-teal-700 group-hover:bg-teal-100",
-    yellow: "bg-yellow-50 text-yellow-700 group-hover:bg-yellow-100",
-    slate:  "bg-slate-100 text-slate-600 group-hover:bg-slate-200",
-  };
-  return (
-    <Link href={href} className="group bg-white rounded-xl shadow-sm border border-slate-200 p-5
-      hover:shadow-md transition-all flex flex-col gap-3">
-      <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center transition-colors", colors[accent])}>
-        <Icon className="w-5 h-5" />
-      </div>
-      <div>
-        <p className="font-semibold text-slate-800">{title}</p>
-        <p className="text-sm text-slate-500 mt-0.5">{description}</p>
-      </div>
-    </Link>
   );
 }

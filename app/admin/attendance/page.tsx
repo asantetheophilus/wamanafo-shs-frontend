@@ -78,14 +78,14 @@ export default function AdminAttendancePage() {
 
       <div className="px-8 py-6">
         {!canLoad ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 py-16 text-center">
+          <div className="card px-6 py-16 text-center">
             <ClipboardList className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">
               Select a class and term to view attendance data.
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+          <div className="card">
             <AttendanceSummaryTable rows={summary ?? []} isLoading={isLoading} />
           </div>
         )}

@@ -50,9 +50,9 @@ export default function TeacherScoresPage() {
         ]}
       />
 
-      <div className="px-8 py-6 space-y-6">
+      <div className="page-shell">
         {/* Selectors */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <div className="card p-5">
           <h3 className="text-sm font-semibold text-slate-700 mb-4">Select subject, class, and term</h3>
           <div className="grid grid-cols-3 gap-4">
             <div>
@@ -90,7 +90,7 @@ export default function TeacherScoresPage() {
 
         {/* Grid */}
         {canLoad ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="card p-6">
             {isLoading && (
               <div className="flex justify-center py-12">
                 <div className="w-6 h-6 rounded-full border-2 border-teal-600 border-t-transparent animate-spin" />
@@ -116,7 +116,7 @@ export default function TeacherScoresPage() {
             )}
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 py-16 text-center">
+          <div className="card px-6 py-16 text-center">
             <BookOpen className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">Select a subject, class, and term to begin entering scores.</p>
           </div>

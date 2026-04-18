@@ -70,7 +70,7 @@ export default function TeacherDetailPage() {
       <div className="px-8 py-6 grid grid-cols-3 gap-6">
         {/* Profile card */}
         <div className="col-span-1 space-y-4">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 text-center">
+          <div className="card p-6 text-center">
             <div className="w-20 h-20 rounded-full bg-yellow-100 text-yellow-800 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
               {getInitials(fullName)}
             </div>
@@ -134,7 +134,7 @@ export default function TeacherDetailPage() {
 
         {/* Edit form */}
         <div className="col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="card p-6">
             <h3 className="text-base font-semibold text-slate-800 mb-5">Edit Profile</h3>
             <EditTeacherForm teacher={teacher} onSuccess={handleUpdateSuccess} />
           </div>

@@ -54,18 +54,17 @@ export default function TeacherAttendancePage() {
         ]}
       />
 
-      <div className="px-8 py-6 space-y-6">
+      <div className="page-shell">
         {/* Selector bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <div className="card p-5">
           <h3 className="text-sm font-semibold text-slate-700 mb-4">Select class, term, and date</h3>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Class</label>
+              <label className="label text-xs">Class</label>
               <select
                 value={classId}
                 onChange={(e) => setClassId(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300
-                  focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                className="select"
               >
                 <option value="">Select class…</option>
                 {(classesData?.items ?? []).map((c) => (
@@ -75,12 +74,11 @@ export default function TeacherAttendancePage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Term</label>
+              <label className="label text-xs">Term</label>
               <select
                 value={termId}
                 onChange={(e) => setTermId(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300
-                  focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                className="select"
               >
                 <option value="">Select term…</option>
                 {(termsData?.items ?? []).map((t) => (
@@ -92,7 +90,7 @@ export default function TeacherAttendancePage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">
+              <label className="label text-xs">
                 <CalendarDays className="w-3 h-3 inline mr-1" />
                 Date
               </label>
@@ -121,7 +119,7 @@ export default function TeacherAttendancePage() {
 
         {/* Attendance grid */}
         {canLoad && (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="card p-6">
             <h3 className="text-sm font-semibold text-slate-800 mb-4">
               Attendance for <span className="text-teal-700">{date}</span>
             </h3>
@@ -157,7 +155,7 @@ export default function TeacherAttendancePage() {
         )}
 
         {!canLoad && (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 py-12 text-center">
+          <div className="card px-6 py-12 text-center">
             <CalendarDays className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">
               Select a class, term, and date above to start marking attendance.

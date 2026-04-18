@@ -60,7 +60,7 @@ export default function NewStudentPage() {
       />
 
       <div className="px-8 py-6 max-w-2xl">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="card p-6">
           <CreateStudentForm
             classOptions={classOptions}
             yearOptions={yearOptions}

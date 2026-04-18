@@ -82,15 +82,15 @@ export default function StudentAttendancePage() {
         </select>
 
         {isLoading ? (
-          <div className="h-48 bg-white rounded-xl border border-slate-200 animate-pulse" />
+          <div className="h-48 card-flat animate-pulse" />
         ) : !data ? (
-          <div className="bg-white rounded-xl border border-slate-200 px-6 py-12 text-center">
+          <div className="card-flat px-6 py-12 text-center">
             <p className="text-sm text-slate-500">No attendance data available yet.</p>
           </div>
         ) : (
           <>
             {/* Percentage card */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="card-flat p-6">
               <div className="flex items-end justify-between mb-2">
                 <div>
                   <p className="text-xs text-slate-400 uppercase tracking-wide font-semibold">
@@ -120,7 +120,7 @@ export default function StudentAttendancePage() {
                 { label: "Excused",  value: data.excusedCount,  colour: "text-blue-700" },
               ].map((item) => (
                 <div key={item.label}
-                  className="bg-white rounded-xl border border-slate-200 p-5 text-center">
+                  className="card-flat p-5 text-center">
                   <p className="text-xs text-slate-400 uppercase tracking-wide">{item.label}</p>
                   <p className={cn("text-3xl font-bold mt-1", item.colour)}>{item.value}</p>
                 </div>

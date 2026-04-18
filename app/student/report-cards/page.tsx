@@ -49,11 +49,11 @@ export default function StudentReportCardsPage() {
         {isLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-20 bg-white rounded-xl border border-slate-200 animate-pulse" />
+              <div key={i} className="h-20 card-flat animate-pulse" />
             ))}
           </div>
         ) : cards.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 px-6 py-16 text-center">
+          <div className="card-flat px-6 py-16 text-center">
             <FileText className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">
               No published report cards yet. Check back after your school publishes results.
@@ -65,7 +65,7 @@ export default function StudentReportCardsPage() {
               <Link
                 key={card.id}
                 href={`/student/report-cards/${card.id}`}
-                className="block bg-white rounded-xl border border-slate-200 px-6 py-5
+                className="block card-flat px-6 py-5
                   hover:shadow-md hover:border-teal-300 transition-all group"
               >
                 <div className="flex items-center justify-between">

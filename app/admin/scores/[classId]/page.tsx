@@ -169,7 +169,7 @@ export default function ClassResultsPage() {
 
       <div className="px-8 py-6">
         {!canLoad ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 py-16 text-center">
+          <div className="card px-6 py-16 text-center">
             <BookOpen className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">Select a term to view class results.</p>
           </div>
@@ -196,7 +196,7 @@ function OverallResultsTable({
 
   if (rows.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 py-12 text-center">
+      <div className="card px-6 py-12 text-center">
         <p className="text-sm text-slate-500">
           No results yet. Ensure scores are approved and click Recompute.
         </p>
@@ -205,7 +205,7 @@ function OverallResultsTable({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div className="card overflow-hidden">
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-slate-50 border-b border-slate-200">
@@ -267,14 +267,14 @@ function SubjectResultsTable({
 
   if (rows.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 py-12 text-center">
+      <div className="card px-6 py-12 text-center">
         <p className="text-sm text-slate-500">No approved scores for {subjectName} yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div className="card overflow-hidden">
       <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
         <p className="text-sm font-semibold text-slate-700">{subjectName}</p>
       </div>
@@ -331,7 +331,7 @@ function SubjectResultsTable({
 
 function TableSkeleton({ cols, rows }: { cols: number; rows: number }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 animate-pulse overflow-hidden">
+    <div className="card animate-pulse overflow-hidden">
       <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex gap-4">
         {Array.from({ length: cols }).map((_, i) => (
           <div key={i} className="h-3 bg-slate-200 rounded" style={{ width: 60 + i * 20 }} />

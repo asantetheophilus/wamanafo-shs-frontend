@@ -152,9 +152,9 @@ export default function TeacherConductPage() {
         ]}
       />
 
-      <div className="px-8 py-6 space-y-6">
+      <div className="page-shell">
         {/* Selectors */}
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="card-flat p-5">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Class</label>
@@ -180,7 +180,7 @@ export default function TeacherConductPage() {
         </div>
 
         {!canLoad && (
-          <div className="bg-white rounded-xl border border-slate-200 px-6 py-12 text-center">
+          <div className="card-flat px-6 py-12 text-center">
             <UserCheck className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">Select your form class and term to enter conduct ratings.</p>
           </div>
@@ -193,13 +193,13 @@ export default function TeacherConductPage() {
         )}
 
         {canLoad && !studentsLoading && students.length === 0 && (
-          <div className="bg-white rounded-xl border border-slate-200 px-6 py-12 text-center">
+          <div className="card-flat px-6 py-12 text-center">
             <p className="text-sm text-slate-500">No students enrolled in this class.</p>
           </div>
         )}
 
         {canLoad && !studentsLoading && students.length > 0 && (
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="card-flat overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>

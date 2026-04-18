@@ -87,9 +87,9 @@ export default function StudentScoresPage() {
         </div>
 
         {isLoading ? (
-          <div className="h-48 bg-white rounded-xl border border-slate-200 animate-pulse" />
+          <div className="h-48 card-flat animate-pulse" />
         ) : scores.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 px-6 py-12 text-center">
+          <div className="card-flat px-6 py-12 text-center">
             <p className="text-sm text-slate-500">No approved scores for this term yet.</p>
           </div>
         ) : (
@@ -102,7 +102,7 @@ export default function StudentScoresPage() {
                 <h3 className="text-xs font-bold text-teal-700 uppercase tracking-widest mb-3">
                   {group.title}
                 </h3>
-                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                <div className="card-flat overflow-hidden">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-teal-950 text-white">

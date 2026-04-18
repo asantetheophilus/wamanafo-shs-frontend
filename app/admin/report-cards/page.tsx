@@ -206,16 +206,16 @@ export default function AdminReportCardsPage() {
 
         {/* Cards table */}
         {!canLoad ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 py-16 text-center">
+          <div className="card px-6 py-16 text-center">
             <FileText className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">Select a class and term to manage report cards.</p>
           </div>
         ) : isLoading ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex justify-center py-12">
+          <div className="card flex justify-center py-12">
             <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
           </div>
         ) : cards.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-6 py-12 text-center">
+          <div className="card px-6 py-12 text-center">
             <FileText className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">
               No report cards generated yet.{" "}
@@ -225,7 +225,7 @@ export default function AdminReportCardsPage() {
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="card overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">

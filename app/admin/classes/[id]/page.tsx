@@ -53,8 +53,8 @@ export default function ClassDetailPage() {
     return <div className="animate-pulse px-8 py-6 space-y-4">
       <div className="h-8 bg-slate-200 rounded w-48" />
       <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-1 h-64 bg-white rounded-xl border border-slate-200" />
-        <div className="col-span-2 h-64 bg-white rounded-xl border border-slate-200" />
+        <div className="col-span-1 h-64 card-flat" />
+        <div className="col-span-2 h-64 card-flat" />
       </div>
     </div>;
   }
@@ -88,13 +88,13 @@ export default function ClassDetailPage() {
         {/* Info + edit card */}
         <div className="col-span-2 space-y-6">
           {/* Edit form */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="card p-6">
             <h3 className="text-sm font-semibold text-slate-800 mb-4">Class Settings</h3>
             <EditClassForm cls={cls} teacherOptions={teacherOptions} onSuccess={handleUpdateSuccess} />
           </div>
 
           {/* Student roster */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+          <div className="card">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-slate-800">
                 Enrolled Students
@@ -147,7 +147,7 @@ export default function ClassDetailPage() {
 
         {/* Sidebar info */}
         <div className="col-span-1 space-y-4">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+          <div className="card p-5">
             <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Details</h4>
             <div className="space-y-0 divide-y divide-slate-100 text-sm">
               <InfoRow label="Year"        value={cls.year.name} />
@@ -162,7 +162,7 @@ export default function ClassDetailPage() {
           </div>
 
           {/* Subjects in programme */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+          <div className="card p-5">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 Programme Subjects

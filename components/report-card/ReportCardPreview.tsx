@@ -56,7 +56,7 @@ export function ReportCardPreview({ data }: ReportCardPreviewProps) {
         </div>
       </div>
 
-      <div className="px-8 py-6 space-y-6">
+      <div className="page-shell">
         {/* Student block */}
         <div className="grid grid-cols-5 gap-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
           <StudentField label="Full Name"     value={`${data.student.lastName}, ${data.student.firstName}`} />

@@ -96,9 +96,9 @@ export default function PromotionPage() {
         ]}
       />
 
-      <div className="px-8 py-6 space-y-6">
+      <div className="page-shell">
         {/* Selectors + criteria */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-5">
+        <div className="card p-5 space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Class</label>
@@ -166,7 +166,7 @@ export default function PromotionPage() {
               { label: "Borderline", count: borderlineCt, colour: "text-yellow-700" },
               { label: "Repeat",     count: repeatCt,     colour: "text-red-700"   },
             ].map((s) => (
-              <div key={s.label} className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-4 flex items-center gap-3">
+              <div key={s.label} className="card px-5 py-4 flex items-center gap-3">
                 <p className={cn("text-2xl font-bold font-mono", s.colour)}>{s.count}</p>
                 <p className="text-sm text-slate-500">{s.label}</p>
               </div>
@@ -176,12 +176,12 @@ export default function PromotionPage() {
 
         {/* Results table */}
         {!canLoad ? (
-          <div className="bg-white rounded-xl border border-slate-200 px-6 py-16 text-center">
+          <div className="card-flat px-6 py-16 text-center">
             <Users className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">Select a class and Term 3 to compute recommendations.</p>
           </div>
         ) : isLoading ? (
-          <div className="bg-white rounded-xl border border-slate-200 flex justify-center py-12">
+          <div className="card-flat flex justify-center py-12">
             <div className="w-6 h-6 rounded-full border-2 border-teal-600 border-t-transparent animate-spin" />
           </div>
         ) : isError ? (
@@ -191,11 +191,11 @@ export default function PromotionPage() {
             </p>
           </div>
         ) : rows.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 px-6 py-12 text-center">
+          <div className="card-flat px-6 py-12 text-center">
             <p className="text-sm text-slate-500">No active students found in this class.</p>
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="card overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">

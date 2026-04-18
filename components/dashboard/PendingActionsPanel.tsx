@@ -1,91 +1,73 @@
 // ============================================================
-// Wamanafo SHS — Pending Actions Panel
-// Shows admin what needs attention: pending score approvals
-// and generated-but-unpublished report cards.
+// Wamanafo SHS — Pending Actions Panel (Liquid UI)
 // ============================================================
-
 import Link from "next/link";
-import { CheckCircle, FileText, ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { BookOpen, FileText, ChevronRight } from "lucide-react";
 
 interface PendingActionsPanelProps {
-  pendingScores:         number;
+  pendingScores:          number;
   unpublishedReportCards: number;
 }
 
-export function PendingActionsPanel({
-  pendingScores,
-  unpublishedReportCards,
-}: PendingActionsPanelProps) {
-  const hasActions = pendingScores > 0 || unpublishedReportCards > 0;
+export function PendingActionsPanel({ pendingScores, unpublishedReportCards }: PendingActionsPanelProps) {
+  const items = [
+    {
+      href:   "/admin/scores",
+      icon:   BookOpen,
+      label:  "Pending Scores",
+      count:  pendingScores,
+      color:  pendingScores > 0
+        ? "text-amber-700 bg-amber-100 border-amber-200"
+        : "text-slate-400 bg-slate-100 border-slate-200",
+      urgent: pendingScores > 0,
+    },
+    {
+      href:   "/admin/report-cards",
+      icon:   FileText,
+      label:  "Unpublished Reports",
+      count:  unpublishedReportCards,
+      color:  unpublishedReportCards > 0
+        ? "text-blue-700 bg-blue-100 border-blue-200"
+        : "text-slate-400 bg-slate-100 border-slate-200",
+      urgent: unpublishedReportCards > 0,
+    },
+  ];
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-200">
-        <h3 className="text-sm font-semibold text-slate-800">Pending Actions</h3>
-        <p className="text-xs text-slate-400 mt-0.5">
-          Items that require your attention
-        </p>
+    <div className="card h-full p-0 overflow-hidden">
+      <div className="px-6 py-4 border-b border-slate-100">
+        <h3 className="font-bold text-slate-800">Pending Actions</h3>
+        <p className="text-xs text-slate-400 mt-0.5">Items requiring your attention</p>
       </div>
+      <div className="p-5 space-y-3">
+        {items.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="flex items-center gap-4 p-4 rounded-xl border transition-all
+              hover:shadow-sm hover:border-teal-200 hover:bg-teal-50/20 group"
+          >
+            <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${item.color}`}>
+              <item.icon className="w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-700 group-hover:text-teal-700 transition-colors">
+                {item.label}
+              </p>
+              <p className="text-2xl font-bold font-mono text-slate-900 leading-tight mt-0.5">
+                {item.count}
+              </p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-teal-500 transition-colors shrink-0" />
+          </Link>
+        ))}
 
-      {!hasActions ? (
-        <div className="px-5 py-8 flex flex-col items-center gap-2 text-center">
-          <CheckCircle className="w-8 h-8 text-green-400" />
-          <p className="text-sm font-medium text-slate-600">All caught up!</p>
-          <p className="text-xs text-slate-400">No pending actions at this time.</p>
-        </div>
-      ) : (
-        <div className="divide-y divide-slate-100">
-          {pendingScores > 0 && (
-            <ActionItem
-              icon={CheckCircle}
-              iconBg="bg-yellow-100 text-yellow-700"
-              title="Scores awaiting approval"
-              count={pendingScores}
-              href="/admin/scores"
-              urgent
-            />
-          )}
-          {unpublishedReportCards > 0 && (
-            <ActionItem
-              icon={FileText}
-              iconBg="bg-blue-100 text-blue-700"
-              title="Report cards ready to publish"
-              count={unpublishedReportCards}
-              href="/admin/report-cards"
-            />
-          )}
-        </div>
-      )}
+        {pendingScores === 0 && unpublishedReportCards === 0 && (
+          <div className="text-center py-4">
+            <p className="text-sm text-slate-400">All caught up! No pending actions.</p>
+          </div>
+        )}
+      </div>
     </div>
-  );
-}
-
-function ActionItem({
-  icon: Icon, iconBg, title, count, href, urgent,
-}: {
-  icon:    React.ElementType;
-  iconBg:  string;
-  title:   string;
-  count:   number;
-  href:    string;
-  urgent?: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-colors group"
-    >
-      <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0", iconBg)}>
-        <Icon className="w-4 h-4" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-slate-700">{title}</p>
-        <p className={cn("text-xs mt-0.5", urgent ? "text-yellow-700 font-semibold" : "text-slate-400")}>
-          {count} {count === 1 ? "item" : "items"} waiting
-        </p>
-      </div>
-      <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-teal-600 transition-colors shrink-0" />
-    </Link>
   );
 }

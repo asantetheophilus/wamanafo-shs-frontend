@@ -26,8 +26,8 @@ export default function SubjectDetailPage() {
 
   if (isLoading) {
     return <div className="animate-pulse px-8 py-6 grid grid-cols-3 gap-6">
-      <div className="col-span-1 h-60 bg-white rounded-xl border border-slate-200" />
-      <div className="col-span-2 h-60 bg-white rounded-xl border border-slate-200" />
+      <div className="col-span-1 h-60 card-flat" />
+      <div className="col-span-2 h-60 card-flat" />
     </div>;
   }
 
@@ -63,7 +63,7 @@ export default function SubjectDetailPage() {
       <div className="px-8 py-6 grid grid-cols-3 gap-6">
         {/* Sidebar */}
         <div className="col-span-1 space-y-4">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+          <div className="card p-5">
             <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Details</h4>
             <div className="divide-y divide-slate-100 text-sm">
               <InfoRow label="Code"       value={subject.code} mono />
@@ -73,7 +73,7 @@ export default function SubjectDetailPage() {
           </div>
 
           {/* Programmes using this subject */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+          <div className="card p-5">
             <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
               Assigned to Programmes
             </h4>
@@ -103,7 +103,7 @@ export default function SubjectDetailPage() {
 
         {/* Edit form */}
         <div className="col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="card p-6">
             <h3 className="text-base font-semibold text-slate-800 mb-5">Edit Subject</h3>
             <EditSubjectForm subject={subject} onSuccess={handleSuccess} />
           </div>

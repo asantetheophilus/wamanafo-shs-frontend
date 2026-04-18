@@ -117,7 +117,7 @@ export default function AdminScoresPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+        <div className="card">
           {isLoading ? (
             <div className="flex justify-center py-12">
               <div className="w-6 h-6 rounded-full border-2 border-teal-600 border-t-transparent animate-spin" />

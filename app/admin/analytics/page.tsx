@@ -48,7 +48,7 @@ function useAnalytics() {
 
 function SkeletonCard() {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 animate-pulse">
+    <div className="card-flat p-5 animate-pulse">
       <div className="h-4 w-24 bg-slate-200 rounded mb-3" />
       <div className="h-8 w-16 bg-slate-300 rounded" />
     </div>
@@ -61,7 +61,7 @@ export default function AnalyticsPage() {
   const { data, isLoading, isError, error, refetch } = useAnalytics();
 
   return (
-    <div className="px-8 py-7 space-y-8">
+    <div className="page-shell">
       <PageHeader
         title="Analytics"
         description={
@@ -157,7 +157,7 @@ export default function AnalyticsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white rounded-xl border border-slate-200 p-5 flex items-center gap-4">
+            <div className="card-flat p-5 flex items-center gap-4">
               {(data?.pendingScores ?? 0) > 0 ? (
                 <AlertTriangle className="w-8 h-8 text-amber-500 shrink-0" />
               ) : (
@@ -168,7 +168,7 @@ export default function AnalyticsPage() {
                 <p className="text-sm text-slate-500">Scores awaiting approval</p>
               </div>
             </div>
-            <div className="bg-white rounded-xl border border-slate-200 p-5 flex items-center gap-4">
+            <div className="card-flat p-5 flex items-center gap-4">
               {(data?.unpublishedReportCards ?? 0) > 0 ? (
                 <AlertTriangle className="w-8 h-8 text-amber-500 shrink-0" />
               ) : (
@@ -187,7 +187,7 @@ export default function AnalyticsPage() {
       {!isLoading && !isError && (
         <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Grade distribution */}
-          <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <div className="card-flat p-5">
             <div className="flex items-center gap-2 mb-4">
               <BarChart2 className="w-4 h-4 text-teal-600" />
               <h3 className="text-sm font-semibold text-slate-700">Grade Distribution</h3>
@@ -204,7 +204,7 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Class performance */}
-          <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <div className="card-flat p-5">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="w-4 h-4 text-teal-600" />
               <h3 className="text-sm font-semibold text-slate-700">Class Performance</h3>

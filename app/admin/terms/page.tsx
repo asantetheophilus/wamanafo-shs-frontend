@@ -203,7 +203,7 @@ export default function AdminTermsPage() {
             <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
           </div>
         ) : Object.keys(grouped).length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 px-6 py-12 text-center">
+          <div className="card-flat px-6 py-12 text-center">
             <Settings className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <p className="text-sm text-slate-500">No terms found. Run the database seed first.</p>
           </div>
@@ -223,7 +223,7 @@ export default function AdminTermsPage() {
 
                   return (
                     <div key={term.id}
-                      className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                      className="card overflow-hidden">
                       <div className="px-5 py-4 border-b border-slate-200 flex items-center gap-3">
                         <h3 className="text-sm font-semibold text-slate-800">{term.name}</h3>
                         {term.isCurrent && (
