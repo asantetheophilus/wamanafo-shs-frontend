@@ -15,7 +15,7 @@ import { Loader2, CheckCircle, AlertTriangle, Settings } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { cn } from "@/lib/utils";
-import { apiFetch, getToken } from "@/lib/api-client";
+import { apiFetch } from "@/lib/api-client";
 
 interface TermRow {
   id:               string;

@@ -15,7 +15,6 @@ import { ClassPerformanceChart } from "@/components/dashboard/ClassPerformanceCh
 import {
   GraduationCap, Users, School, ClipboardList,
   TrendingUp, AlertTriangle, CheckCircle2, BarChart2,
-  Loader2,
 } from "lucide-react";
 
 interface DashboardStats {
@@ -106,22 +105,22 @@ export default function AnalyticsPage() {
             <StatCard
               label="Active Students"
               value={data?.activeStudents ?? 0}
-              sub={`of ${data?.totalStudents ?? 0} total`}
+              subtext={`of ${data?.totalStudents ?? 0} total`}
               icon={GraduationCap}
-              color="teal"
+              iconBg="bg-teal-100 text-teal-700"
             />
             <StatCard
               label="Teachers"
               value={data?.totalTeachers ?? 0}
               icon={Users}
-              color="blue"
+              iconBg="bg-blue-100 text-blue-700"
             />
             <StatCard
               label="Classes"
               value={data?.totalClasses ?? 0}
-              sub="this academic year"
+              subtext="this academic year"
               icon={School}
-              color="violet"
+              iconBg="bg-violet-100 text-violet-700"
             />
             <StatCard
               label="Avg Attendance"
@@ -130,13 +129,18 @@ export default function AnalyticsPage() {
                   ? `${data.averageAttendancePercent}%`
                   : "—"
               }
-              sub={
+              subtext={
                 data?.belowThresholdCount
                   ? `${data.belowThresholdCount} below 75%`
                   : "all above threshold"
               }
               icon={ClipboardList}
-              color={data?.belowThresholdCount ? "red" : "green"}
+              iconBg={
+                data?.belowThresholdCount
+                  ? "bg-red-100 text-red-700"
+                  : "bg-green-100 text-green-700"
+              }
+              urgent={!!data?.belowThresholdCount && data.belowThresholdCount > 0}
             />
           </div>
         )}
@@ -215,7 +219,6 @@ export default function AnalyticsPage() {
               <ClassPerformanceChart data={(data?.classPerformance ?? []).map(c => ({
                 className: c.className,
                 averageScore: c.averageScore ?? 0,
-                studentCount: 0,
               }))} />
             )}
           </div>

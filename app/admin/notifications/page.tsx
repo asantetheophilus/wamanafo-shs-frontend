@@ -13,9 +13,8 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { cn } from "@/lib/utils";
 import {
   Bell, AlertTriangle, CheckCircle2, Info,
-  FileText, ClipboardList, Loader2, RefreshCw,
+  FileText, ClipboardList, RefreshCw,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 
 interface DashboardStats {
   currentTermName:          string | null;
