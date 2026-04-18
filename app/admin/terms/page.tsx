@@ -70,9 +70,21 @@ function TermEditForm({
 
   async function onSubmit(data: TermEditValues) {
     setServerMsg(null);
+
+    if (data.startDate && data.endDate && new Date(data.endDate) <= new Date(data.startDate)) {
+      setServerMsg({ type: "error", text: "End date must be after start date." });
+      return;
+    }
+
+    const payload = {
+      ...data,
+      startDate: data.startDate?.trim() || null,
+      endDate: data.endDate?.trim() || null,
+    };
+
     const res = await apiFetch(`/api/v1/terms/${term.id}`, {
       method:  "PATCH",
-      body:    JSON.stringify(data),
+      body:    JSON.stringify(payload),
     });
     if (!res.success) {
       setServerMsg({ type: "error", text: res.error ?? "Update failed." });

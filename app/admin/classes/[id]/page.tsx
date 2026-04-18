@@ -34,7 +34,7 @@ export default function ClassDetailPage() {
     queryKey: ["class-roster", id, cls?.year.id],
     queryFn: async () => {
       if (!cls?.year.id) return { data: [] };
-      const res = await apiFetch<Array<{ student: { id: string; indexNumber: string; status: string; user: { firstName: string; lastName: string } } }>>(`/api/v1/classes/${id}?resource=students&yearId=${cls.year.id}`);
+      const res = await apiFetch<Array<{ student: { id: string; indexNumber: string; status: string; user: { firstName: string; lastName: string } } }>>(`/api/v1/classes/${id}/enrollments?yearId=${cls.year.id}`);
       return res.success ? { data: res.data } : { data: [] };
     },
     enabled: !!cls?.year.id,

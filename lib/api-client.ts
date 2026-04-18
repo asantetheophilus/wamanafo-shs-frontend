@@ -67,17 +67,31 @@ export async function apiFetch<T = unknown>(
 
   const url = path.startsWith("http") ? path : `${API_BASE}${path}`;
 
-  const res = await fetch(url, { ...init, headers });
+  try {
+    const res = await fetch(url, { ...init, headers });
 
-  if (res.status === 401) {
-    // Token expired — clear and reload to login page
-    clearToken();
-    if (typeof window !== "undefined") window.location.href = "/login";
-    return { success: false, error: "Session expired. Please log in again.", code: "UNAUTHORIZED" };
+    if (res.status === 401) {
+      clearToken();
+      if (typeof window !== "undefined" && !skipAuth) window.location.href = "/login";
+      return { success: false, error: "Session expired. Please log in again.", code: "UNAUTHORIZED" };
+    }
+
+    const contentType = res.headers.get("content-type") ?? "";
+    if (contentType.includes("application/json")) {
+      const json = await res.json().catch(() => ({ success: false, error: "Invalid response." }));
+      return json as { success: true; data: T } | { success: false; error: string; code?: string };
+    }
+
+    const text = await res.text().catch(() => "");
+    if (!res.ok) {
+      return { success: false, error: text || `Request failed with status ${res.status}.`, code: "HTTP_ERROR" };
+    }
+
+    return { success: true, data: text as T };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Network error. Please try again.";
+    return { success: false, error: message, code: "NETWORK_ERROR" };
   }
-
-  const json = await res.json().catch(() => ({ success: false, error: "Invalid response." }));
-  return json as { success: true; data: T } | { success: false; error: string; code?: string };
 }
 
 // ── Convenience helpers ───────────────────────────────────────

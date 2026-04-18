@@ -15,7 +15,7 @@ const ROLE_PREFIXES: Record<string, string> = {
   "/parent":  "PARENT",
 };
 
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password"];
 
 export function middleware(req: NextRequest): NextResponse {
   const { pathname } = req.nextUrl;

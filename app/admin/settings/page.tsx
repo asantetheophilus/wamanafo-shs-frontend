@@ -262,7 +262,7 @@ export default function SchoolSettingsPage() {
                 type="text"
                 value={form.address}
                 onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-                placeholder="PO Box 423, Sunyan"
+                placeholder="PO Box 7, Wamanafo, Dormaa East, Ghana"
                 className="input"
               />
             </div>

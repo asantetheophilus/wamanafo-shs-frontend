@@ -10,12 +10,18 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
 
+interface ClassOptionRow {
+  id: string;
+  name: string;
+  year: { id: string; name: string };
+}
+
 /** Fetch classes and years for enrolment dropdowns */
 function useEnrolmentOptions() {
   const classes = useQuery({
     queryKey: ["classes", "options"],
     queryFn: async () => {
-      const res = await apiFetch<{ items: Array<{ id: string; name: string }> }>("/api/v1/classes?pageSize=100");
+      const res = await apiFetch<{ items: ClassOptionRow[] }>("/api/v1/classes?pageSize=100");
       return res.success ? res.data : { items: [] };
     },
   });
@@ -36,9 +42,11 @@ export default function NewStudentPage() {
   const { classes, years } = useEnrolmentOptions();
 
   const classOptions =
-    (classes.data?.items ?? []).map((c: { id: string; name: string }) => ({
+    (classes.data?.items ?? []).map((c) => ({
       value: c.id,
-      label: c.name,
+      label: `${c.name} · ${c.year.name}`,
+      yearId: c.year.id,
+      yearLabel: c.year.name,
     }));
 
   const yearOptions =
@@ -53,8 +61,8 @@ export default function NewStudentPage() {
         title="Add New Student"
         description="Create a student account and optionally enrol them in a class."
         breadcrumbs={[
-          { label: "Admin",    href: "/admin/dashboard" },
-          { label: "Students", href: "/admin/students"  },
+          { label: "Admin", href: "/admin/dashboard" },
+          { label: "Students", href: "/admin/students" },
           { label: "New student" },
         ]}
       />

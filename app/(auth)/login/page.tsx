@@ -66,8 +66,8 @@ export default function LoginPage() {
             <span className="text-yellow-400">Technical School</span>
           </h2>
           <p className="text-white/70 text-sm leading-relaxed max-w-md">
-            Empowering students with quality technical education.<br />
-            PO Box 423, Sunyan · Brong-Ahafo Region, Ghana
+            Equip  Student with the Requisite Skills.<br />
+            PO Box 7, Wamanafo ,Dormaa East,Ghana.
           </p>
           {/* Feature pills */}
           <div className="flex flex-wrap gap-2 mt-6">

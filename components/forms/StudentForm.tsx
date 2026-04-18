@@ -71,14 +71,14 @@ const inputClass = (hasError: boolean) =>
 
 interface CreateStudentFormProps {
   onSuccess: (studentId: string) => void;
-  classOptions?: Array<{ value: string; label: string }>;
-  yearOptions?:  Array<{ value: string; label: string }>;
+  classOptions?: Array<{ value: string; label: string; yearId?: string; yearLabel?: string }>;
+  yearOptions?: Array<{ value: string; label: string }>;
 }
 
 export function CreateStudentForm({
   onSuccess,
   classOptions = [],
-  yearOptions  = [],
+  yearOptions = [],
 }: CreateStudentFormProps) {
   const router = useRouter();
 
@@ -86,28 +86,57 @@ export function CreateStudentForm({
     register,
     handleSubmit,
     setError,
+    watch,
+    setValue,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<CreateFormValues>({
     resolver: zodResolver(createFormSchema),
   });
 
+  const selectedClassId = watch("classId");
+  const selectedYearId = watch("yearId");
+  const selectedClass = classOptions.find((option) => option.value === selectedClassId);
+  const filteredYearOptions = selectedClass?.yearId
+    ? yearOptions.filter((option) => option.value === selectedClass.yearId)
+    : yearOptions;
+
+  useEffect(() => {
+    if (!selectedClass) return;
+    if (selectedClass.yearId && selectedYearId !== selectedClass.yearId) {
+      setValue("yearId", selectedClass.yearId, { shouldValidate: true, shouldDirty: true });
+    }
+    clearErrors("yearId");
+  }, [selectedClass, selectedYearId, setValue, clearErrors]);
+
   async function onSubmit(data: CreateFormValues) {
-    // Strip empty optional strings so backend doesn't see ""
+    if (data.classId && !data.yearId) {
+      setError("yearId", { message: "Select the academic year for the chosen class." });
+      return;
+    }
+
+    if (selectedClass?.yearId && data.yearId && selectedClass.yearId !== data.yearId) {
+      setError("yearId", {
+        message: `Selected class belongs to ${selectedClass.yearLabel ?? "a different academic year"}.`,
+      });
+      return;
+    }
+
     const payload = {
       ...data,
       dateOfBirth: data.dateOfBirth || undefined,
-      classId:     data.classId     || undefined,
-      yearId:      data.yearId      || undefined,
-      gender:      data.gender      || undefined,
+      classId: data.classId || undefined,
+      yearId: data.yearId || undefined,
+      gender: data.gender || undefined,
     };
 
     const res = await apiFetch<{ id: string }>("/api/v1/students", {
       method: "POST",
-      body:   JSON.stringify(payload),
+      body: JSON.stringify(payload),
     });
 
     if (!res.success) {
-      setError("root", { message: res.error ?? "An error occurred." });
+      setError("root", { message: res.error ?? "Unable to create the student right now." });
       return;
     }
 
@@ -190,10 +219,13 @@ export function CreateStudentForm({
           <Field label="Academic year" error={errors.yearId?.message}>
             <select {...register("yearId")} className={inputClass(!!errors.yearId)}>
               <option value="">Select year…</option>
-              {yearOptions.map((o) => (
+              {filteredYearOptions.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
+            {selectedClass?.yearLabel && (
+              <p className="mt-1.5 text-xs text-slate-500">Chosen class belongs to {selectedClass.yearLabel}.</p>
+            )}
           </Field>
         </div>
       )}
@@ -234,6 +266,7 @@ export function CreateStudentForm({
 }
 
 // ── Edit form ─────────────────────────────────────────────────
+
 
 interface EditStudentFormProps {
   student: StudentDTO;
