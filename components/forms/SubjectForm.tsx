@@ -38,13 +38,20 @@ const inputClass = (e: boolean) =>
 
 export function CreateSubjectForm({ onSuccess }: { onSuccess: (id: string) => void }) {
   const router = useRouter();
-  const { register, handleSubmit, setError, formState: { errors, isSubmitting } } =
+  const { register, handleSubmit, setError, setValue, watch, formState: { errors, isSubmitting } } =
     useForm<CreateSubjectInput>({ resolver: zodResolver(createSubjectSchema) });
 
+  const selectedIsCore = watch("isCore");
+
   async function onSubmit(data: CreateSubjectInput) {
+    const payload = {
+      ...data,
+      isCore: typeof data.isCore === "boolean" ? data.isCore : String(data.isCore) === "true",
+    };
+
     const res = await apiFetch<{ id: string }>("/api/v1/subjects", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     });
     if (!res.success) {
       setError("root", { message: res.error ?? "An error occurred." });
@@ -75,13 +82,18 @@ export function CreateSubjectForm({ onSuccess }: { onSuccess: (id: string) => vo
       <Field label="Subject type" error={(errors as Record<string, { message?: string }>).isCore?.message} required>
         <div className="flex gap-4 mt-1">
           {[
-            { value: "true",  label: "Core subject",    desc: "Required for all students" },
-            { value: "false", label: "Elective subject", desc: "Programme-specific" },
+            { value: true,  label: "Core subject",    desc: "Required for all students" },
+            { value: false, label: "Elective subject", desc: "Programme-specific" },
           ].map(opt => (
-            <label key={opt.value}
-              className="flex-1 flex items-start gap-3 p-3 rounded-lg border border-slate-200 cursor-pointer has-[:checked]:border-teal-500 has-[:checked]:bg-teal-50 transition-colors">
-              <input {...register("isCore", { setValueAs: v => v === "true" })}
-                type="radio" value={opt.value}
+            <label key={String(opt.value)}
+              className={cn(
+                "flex-1 flex items-start gap-3 p-3 rounded-lg border border-slate-200 cursor-pointer transition-colors",
+                selectedIsCore === opt.value && "border-teal-500 bg-teal-50"
+              )}>
+              <input
+                type="radio"
+                checked={selectedIsCore === opt.value}
+                onChange={() => setValue("isCore", opt.value, { shouldDirty: true, shouldValidate: true })}
                 className="mt-0.5 text-teal-600 focus:ring-teal-500" />
               <div>
                 <p className="text-sm font-medium text-slate-800">{opt.label}</p>

@@ -82,14 +82,31 @@ export default function LoginPage() {
 
       {/* ── Right: Login Form Panel ──────────────────────── */}
       <div className="w-full lg:w-1/2 xl:w-2/5 flex flex-col justify-center px-8 sm:px-12 xl:px-16 bg-white relative">
-        {/* Mobile logo */}
-        <div className="lg:hidden flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 rounded-xl bg-teal-700 flex items-center justify-center">
-            <GraduationCap className="w-5 h-5 text-yellow-400" />
-          </div>
-          <div>
-            <p className="font-bold text-slate-900 text-sm">Wamanafo SHS</p>
-            <p className="text-slate-500 text-xs">Academic Management System</p>
+        {/* Mobile hero */}
+        <div className="lg:hidden mb-8 -mx-8 sm:-mx-12 relative overflow-hidden">
+          <div className="relative h-64 sm:h-72">
+            <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/school-entrance.jpg')" }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#071F27]/90 via-[#071F27]/45 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#071F27]/30 to-transparent" />
+            <div className="relative z-10 h-full flex flex-col justify-end px-8 pb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-11 h-11 rounded-xl bg-yellow-500/90 backdrop-blur flex items-center justify-center shadow-lg">
+                  <GraduationCap className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-yellow-400 text-xs font-bold uppercase tracking-[0.2em]">Wamanafo SHS</p>
+                  <p className="text-white/70 text-xs">Academic Management System</p>
+                </div>
+              </div>
+              <h2 className="text-3xl font-bold text-white leading-tight mb-2" style={{ fontFamily: "Georgia, serif" }}>
+                Wamanafo Senior High<br />
+                <span className="text-yellow-400">Technical School</span>
+              </h2>
+              <p className="text-white/80 text-sm leading-relaxed max-w-sm">
+                Equip Student with the Requisite Skills.<br />
+                PO Box 7, Wamanafo, Dormaa East, Ghana.
+              </p>
+            </div>
           </div>
         </div>
 

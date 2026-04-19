@@ -7,6 +7,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { studentPortalKeys } from "@/hooks/useStudentPortal";
+import { api } from "@/lib/api-client";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { formatAttendancePercentage } from "@/lib/attendance";
 import { cn } from "@/lib/utils";
@@ -40,20 +41,19 @@ export default function StudentAttendancePage() {
   const { data: termsData } = useQuery({
     queryKey: ["terms", "options"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/terms");
-      return (await res.json()).data as { items: Array<{ id: string; name: string; isCurrent: boolean }> };
+      const res = await api.get<{ items: Array<{ id: string; name: string; isCurrent: boolean }> }>("/api/v1/terms");
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
   });
 
   const { data, isLoading } = useQuery({
     queryKey: studentPortalKeys.attendance(),
     queryFn: async () => {
-      const url = new URL("/api/v1/student-portal", window.location.origin);
-      url.searchParams.set("view", "attendance");
-      if (termId) url.searchParams.set("termId", termId);
-      const res = await fetch(url.toString());
-      if (!res.ok) throw new Error("Failed to load attendance");
-      return (await res.json()).data as AttendanceSummary;
+      const url = termId ? `/api/v1/student-portal?view=attendance&termId=${termId}` : "/api/v1/student-portal?view=attendance";
+      const res = await api.get<AttendanceSummary>(url);
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
   });
 

@@ -11,6 +11,7 @@ import { CalendarDays, AlertTriangle } from "lucide-react";
 import { useAttendanceGrid } from "@/hooks/useAttendance";
 import { AttendanceForm } from "@/components/forms/AttendanceForm";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { api } from "@/lib/api-client";
 
 export default function TeacherAttendancePage() {
   const today = format(new Date(), "yyyy-MM-dd");
@@ -24,8 +25,9 @@ export default function TeacherAttendancePage() {
   const { data: classesData } = useQuery({
     queryKey: ["teacher-classes"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/classes?pageSize=50");
-      return (await res.json()).data as { items: Array<{ id: string; name: string }> };
+      const res = await api.get<{ items: Array<{ id: string; name: string }> }>("/api/v1/classes?pageSize=50");
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
   });
 
@@ -33,8 +35,9 @@ export default function TeacherAttendancePage() {
   const { data: termsData } = useQuery({
     queryKey: ["terms", "options"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/terms");
-      return (await res.json()).data as { items: Array<{ id: string; name: string; number: number; isCurrent: boolean }> };
+      const res = await api.get<{ items: Array<{ id: string; name: string; number: number; isCurrent: boolean }> }>("/api/v1/terms");
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
   });
 

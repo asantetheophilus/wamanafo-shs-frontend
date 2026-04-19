@@ -14,12 +14,10 @@ const nextConfig = {
     ],
   },
 
-  // Rewrites: proxy /api/v1/* to backend during local dev
+  // Rewrites: proxy /api/v1/* to the backend in all environments.
   async rewrites() {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-    return process.env.NODE_ENV === "development"
-      ? [{ source: "/api/v1/:path*", destination: `${backendUrl}/api/v1/:path*` }]
-      : [];
+    const backendUrl = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000").replace(/\/$/, "");
+    return [{ source: "/api/v1/:path*", destination: `${backendUrl}/api/v1/:path*` }];
   },
 
   async headers() {

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { studentPortalKeys } from "@/hooks/useStudentPortal";
+import { api } from "@/lib/api-client";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { formatPosition } from "@/lib/ranking";
@@ -26,9 +27,9 @@ export default function StudentReportCardsPage() {
   const { data, isLoading } = useQuery({
     queryKey: studentPortalKeys.reportCards(),
     queryFn: async () => {
-      const res = await fetch("/api/v1/student-portal?view=report-cards");
-      if (!res.ok) throw new Error("Failed to load report cards");
-      return (await res.json()).data as ReportCardRow[];
+      const res = await api.get<ReportCardRow[]>("/api/v1/student-portal?view=report-cards");
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
   });
 

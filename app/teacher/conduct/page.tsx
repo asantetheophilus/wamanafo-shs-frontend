@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, CheckCircle, AlertTriangle, UserCheck } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { api } from "@/lib/api-client";
 import { DEFAULT_CONDUCT_CRITERIA, CONDUCT_RATINGS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -45,16 +46,18 @@ export default function TeacherConductPage() {
   const { data: classesData } = useQuery({
     queryKey: ["teacher-form-classes"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/classes?pageSize=50");
-      return (await res.json()).data as { items: Array<{ id: string; name: string }> };
+      const res = await api.get<{ items: Array<{ id: string; name: string }> }>("/api/v1/classes?pageSize=50");
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
   });
 
   const { data: termsData } = useQuery({
     queryKey: ["terms", "options"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/terms");
-      return (await res.json()).data as { items: Array<{ id: string; name: string; isCurrent: boolean }> };
+      const res = await api.get<{ items: Array<{ id: string; name: string; isCurrent: boolean }> }>("/api/v1/terms");
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
   });
 
@@ -63,8 +66,12 @@ export default function TeacherConductPage() {
     queryKey: ["class-roster", classId],
     queryFn: async () => {
       if (!classId) return { data: [] };
-      const res = await fetch(`/api/v1/classes/${classId}?resource=students&yearId=current`);
-      return (await res.json()) as { data: EnrolledStudent[] };
+      const clsRes = await api.get<{ year: { id: string } }>(`/api/v1/classes/${classId}`);
+      if (!clsRes.success) throw new Error(clsRes.error);
+      const yearId = clsRes.data.year.id;
+      const res = await api.get<EnrolledStudent[]>(`/api/v1/classes/${classId}/enrollments?yearId=${yearId}`);
+      if (!res.success) throw new Error(res.error);
+      return { data: res.data };
     },
     enabled: !!classId,
   });
@@ -73,8 +80,9 @@ export default function TeacherConductPage() {
   const { data: existingRatings } = useQuery({
     queryKey: ["conduct", classId, termId],
     queryFn: async () => {
-      const res = await fetch(`/api/v1/conduct?classId=${classId}&termId=${termId}`);
-      return (await res.json()).data as ExistingRating[];
+      const res = await api.get<ExistingRating[]>(`/api/v1/conduct?classId=${classId}&termId=${termId}`);
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
     enabled: !!classId && !!termId,
   });

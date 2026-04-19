@@ -8,6 +8,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { studentPortalKeys } from "@/hooks/useStudentPortal";
+import { api } from "@/lib/api-client";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { formatDisplayScore } from "@/lib/grading";
 import { cn } from "@/lib/utils";
@@ -35,20 +36,19 @@ export default function StudentScoresPage() {
   const { data: termsData } = useQuery({
     queryKey: ["terms", "options"],
     queryFn: async () => {
-      const res = await fetch("/api/v1/terms");
-      return (await res.json()).data as { items: Array<{ id: string; name: string; isCurrent: boolean }> };
+      const res = await api.get<{ items: Array<{ id: string; name: string; isCurrent: boolean }> }>("/api/v1/terms");
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
   });
 
   const { data: scoresData, isLoading } = useQuery({
     queryKey: studentPortalKeys.scores(termId || undefined),
     queryFn: async () => {
-      const url = new URL("/api/v1/student-portal", window.location.origin);
-      url.searchParams.set("view", "scores");
-      if (termId) url.searchParams.set("termId", termId);
-      const res = await fetch(url.toString());
-      if (!res.ok) throw new Error("Failed to load scores");
-      return (await res.json()).data as SubjectScore[];
+      const url = termId ? `/api/v1/student-portal?view=scores&termId=${termId}` : "/api/v1/student-portal?view=scores";
+      const res = await api.get<SubjectScore[]>(url);
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
     enabled: true,
   });

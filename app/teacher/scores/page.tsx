@@ -10,6 +10,7 @@ import { BookOpen } from "lucide-react";
 import { useScoreGrid } from "@/hooks/useScores";
 import { ScoreEntryGrid } from "@/components/forms/ScoreEntryGrid";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { api } from "@/lib/api-client";
 
 export default function TeacherScoresPage() {
   const [classId,   setClassId]   = useState("");
@@ -18,20 +19,17 @@ export default function TeacherScoresPage() {
 
   const { data: classesData } = useQuery({
     queryKey: ["teacher-classes"],
-    queryFn:  async () => (await fetch("/api/v1/classes?pageSize=50")).json()
-      .then((r: { data: { items: Array<{ id: string; name: string }> } }) => r.data),
+    queryFn: async () => { const res = await api.get<{ items: Array<{ id: string; name: string }> }>("/api/v1/classes?pageSize=50"); if (!res.success) throw new Error(res.error); return res.data; },
   });
 
   const { data: subjectsData } = useQuery({
     queryKey: ["subjects", "options"],
-    queryFn:  async () => (await fetch("/api/v1/subjects?pageSize=100")).json()
-      .then((r: { data: { items: Array<{ id: string; name: string; code: string }> } }) => r.data),
+    queryFn: async () => { const res = await api.get<{ items: Array<{ id: string; name: string; code: string }> }>("/api/v1/subjects?pageSize=100"); if (!res.success) throw new Error(res.error); return res.data; },
   });
 
   const { data: termsData } = useQuery({
     queryKey: ["terms", "options"],
-    queryFn:  async () => (await fetch("/api/v1/terms")).json()
-      .then((r: { data: { items: Array<{ id: string; name: string; number: number; isCurrent: boolean; classScoreWeight: number; examScoreWeight: number }> } }) => r.data),
+    queryFn: async () => { const res = await api.get<{ items: Array<{ id: string; name: string; number: number; isCurrent: boolean; classScoreWeight: number; examScoreWeight: number }> }>("/api/v1/terms"); if (!res.success) throw new Error(res.error); return res.data; },
   });
 
   const selectedTerm = termsData?.items?.find((t: { id: string }) => t.id === termId);
