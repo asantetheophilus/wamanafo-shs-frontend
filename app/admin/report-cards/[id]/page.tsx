@@ -10,7 +10,7 @@ import Link from "next/link";
 import {
   ArrowLeft, Download, Send, EyeOff, Loader2, CheckCircle,
 } from "lucide-react";
-import { useReportCard, usePublishSingleReportCard, reportCardKeys } from "@/hooks/useReportCards";
+import { useReportCard, usePublishSingleReportCard, reportCardKeys, downloadReportCardPdf } from "@/hooks/useReportCards";
 import { ReportCardPreview } from "@/components/report-card/ReportCardPreview";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,7 @@ export default function ReportCardDetailPage() {
   const { id }      = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const [actionMsg, setActionMsg] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   const { data: card, isLoading, isError } = useReportCard(id);
   const publishMutation = usePublishSingleReportCard();
@@ -29,6 +30,18 @@ export default function ReportCardDetailPage() {
     await publishMutation.mutateAsync({ id, publish });
     void queryClient.invalidateQueries({ queryKey: reportCardKeys.detail(id) });
     setActionMsg(publish ? "Report card published." : "Report card unpublished.");
+  }
+
+  async function handleDownloadPdf() {
+    try {
+      setActionMsg(null);
+      setDownloading(true);
+      await downloadReportCardPdf(id);
+    } catch (error) {
+      setActionMsg(error instanceof Error ? error.message : "Unable to download PDF.");
+    } finally {
+      setDownloading(false);
+    }
   }
 
   if (isLoading) {
@@ -78,18 +91,17 @@ export default function ReportCardDetailPage() {
           )}
 
           {/* PDF download */}
-          <a
-            href={`/api/v1/report-cards/${id}/pdf`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={handleDownloadPdf}
+            disabled={downloading}
             className={cn(
               "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold",
-              "border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors"
+              "border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-60"
             )}
           >
-            <Download className="w-4 h-4" />
-            Download PDF
-          </a>
+            {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            {downloading ? "Downloading..." : "Download PDF"}
+          </button>
 
           {/* Publish / Unpublish */}
           {isPublished ? (

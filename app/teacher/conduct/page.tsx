@@ -1,5 +1,5 @@
 // ============================================================
-// Wamanafo SHS — Teacher: Conduct Ratings Entry
+// Wamanafo SHS - Teacher: Conduct Ratings Entry
 // Only accessible to teachers who are form masters.
 // Allows rating all students in the form class per criterion.
 // ============================================================
@@ -25,24 +25,29 @@ interface EnrolledStudent {
 interface ExistingRating {
   studentId: string;
   criterion: string;
-  rating:    string;
-  remark:    string | null;
+  rating: string;
+  remark: string | null;
 }
 
 type RatingMap = Record<string, Record<string, { rating: string; remark: string }>>;
-// key: studentId → criterion → { rating, remark }
+
+interface ConductEntry {
+  studentId: string;
+  criterion: string;
+  rating: string;
+  remark?: string;
+}
 
 export default function TeacherConductPage() {
-  const [classId, setClassId]   = useState("");
-  const [termId,  setTermId]    = useState("");
+  const [classId, setClassId] = useState("");
+  const [termId, setTermId] = useState("");
   const [ratingMap, setRatingMap] = useState<RatingMap>({});
   const [formRemarks, setFormRemarks] = useState<Record<string, string>>({});
-  const [saved, setSaved]        = useState(false);
-  const [error, setError]        = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const qc = useQueryClient();
 
-  // Fetch form master classes
   const { data: classesData } = useQuery({
     queryKey: ["teacher-form-classes"],
     queryFn: async () => {
@@ -61,7 +66,6 @@ export default function TeacherConductPage() {
     },
   });
 
-  // Students in selected class
   const { data: studentsData, isLoading: studentsLoading } = useQuery({
     queryKey: ["class-roster", classId],
     queryFn: async () => {
@@ -76,7 +80,6 @@ export default function TeacherConductPage() {
     enabled: !!classId,
   });
 
-  // Existing conduct ratings
   const { data: existingRatings } = useQuery({
     queryKey: ["conduct", classId, termId],
     queryFn: async () => {
@@ -87,7 +90,6 @@ export default function TeacherConductPage() {
     enabled: !!classId && !!termId,
   });
 
-  // Populate local state from existing ratings
   useEffect(() => {
     if (!existingRatings) return;
     const map: RatingMap = {};
@@ -106,10 +108,9 @@ export default function TeacherConductPage() {
 
   const students = studentsData?.data ?? [];
 
-  // Save mutation
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const entries: Array<{ studentId: string; criterion: string; rating: string; remark?: string }> = [];
+      const entries: ConductEntry[] = [];
 
       for (const [studentId, criteria] of Object.entries(ratingMap)) {
         for (const [criterion, { rating, remark }] of Object.entries(criteria)) {
@@ -117,16 +118,26 @@ export default function TeacherConductPage() {
         }
       }
 
+      for (const [studentId, remark] of Object.entries(formRemarks)) {
+        if (remark.trim()) {
+          entries.push({
+            studentId,
+            criterion: "FORM_MASTER_REMARK",
+            rating: "N/A",
+            remark: remark.trim(),
+          });
+        }
+      }
+
       if (entries.length === 0) throw new Error("No ratings to save.");
 
-      const res = await fetch(`/api/v1/conduct?bulk=true`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ termId, classId, entries }),
+      const res = await api.post<{ saved: number }>("/api/v1/conduct?bulk=true", {
+        termId,
+        classId,
+        entries,
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Save failed.");
-      return json.data;
+      if (!res.success) throw new Error(res.error);
+      return res.data;
     },
     onSuccess: () => {
       setSaved(true);
@@ -161,26 +172,36 @@ export default function TeacherConductPage() {
       />
 
       <div className="page-shell">
-        {/* Selectors */}
         <div className="card-flat p-5">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Class</label>
-              <select value={classId} onChange={(e) => setClassId(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white">
-                <option value="">Select class…</option>
+              <select
+                value={classId}
+                onChange={(e) => setClassId(e.target.value)}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+              >
+                <option value="">Select class...</option>
                 {(classesData?.items ?? []).map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Term</label>
-              <select value={termId} onChange={(e) => setTermId(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white">
-                <option value="">Select term…</option>
+              <select
+                value={termId}
+                onChange={(e) => setTermId(e.target.value)}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+              >
+                <option value="">Select term...</option>
                 {(termsData?.items ?? []).map((t) => (
-                  <option key={t.id} value={t.id}>{t.name}{t.isCurrent ? " (current)" : ""}</option>
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                    {t.isCurrent ? " (current)" : ""}
+                  </option>
                 ))}
               </select>
             </div>
@@ -237,12 +258,13 @@ export default function TeacherConductPage() {
                             <select
                               value={ratingMap[student.id]?.[criterion]?.rating ?? ""}
                               onChange={(e) => setRating(student.id, criterion, e.target.value)}
-                              className="w-full text-xs px-2 py-1.5 rounded-md border border-slate-300
-                                focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                              className="w-full text-xs px-2 py-1.5 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
                             >
-                              <option value="">—</option>
+                              <option value="">-</option>
                               {CONDUCT_RATINGS.map((r) => (
-                                <option key={r} value={r}>{r}</option>
+                                <option key={r} value={r}>
+                                  {r}
+                                </option>
                               ))}
                             </select>
                           </td>
@@ -255,9 +277,8 @@ export default function TeacherConductPage() {
                               setFormRemarks((prev) => ({ ...prev, [student.id]: e.target.value }));
                               setSaved(false);
                             }}
-                            placeholder="Optional remark…"
-                            className="w-full text-xs px-2 py-1.5 rounded-md border border-slate-300
-                              focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                            placeholder="Optional remark..."
+                            className="w-full text-xs px-2 py-1.5 rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
                           />
                         </td>
                       </tr>
@@ -291,7 +312,7 @@ export default function TeacherConductPage() {
                 )}
               >
                 {saveMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                {saveMutation.isPending ? "Saving…" : "Save conduct ratings"}
+                {saveMutation.isPending ? "Saving..." : "Save conduct ratings"}
               </button>
             </div>
           </div>

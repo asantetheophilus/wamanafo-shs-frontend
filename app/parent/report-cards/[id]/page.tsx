@@ -8,15 +8,26 @@
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Download, Loader2 } from "lucide-react";
-import { useReportCard } from "@/hooks/useReportCards";
+import { useReportCard, downloadReportCardPdf } from "@/hooks/useReportCards";
 import { ReportCardPreview } from "@/components/report-card/ReportCardPreview";
+import { useState } from "react";
 
 export default function ParentReportCardPage() {
   const { id }    = useParams<{ id: string }>();
   const params    = useSearchParams();
   const studentId = params.get("studentId") ?? "";
+  const [downloading, setDownloading] = useState(false);
 
   const { data: card, isLoading, isError } = useReportCard(id);
+
+  async function handleDownloadPdf() {
+    try {
+      setDownloading(true);
+      await downloadReportCardPdf(id);
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -55,16 +66,15 @@ export default function ParentReportCardPage() {
           Back to report cards
         </Link>
 
-        <a
-          href={`/api/v1/report-cards/${id}/pdf`}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={handleDownloadPdf}
+          disabled={downloading}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
-            border border-teal-700 text-teal-700 hover:bg-teal-50 transition-colors"
+            border border-teal-700 text-teal-700 hover:bg-teal-50 transition-colors disabled:opacity-60"
         >
-          <Download className="w-4 h-4" />
-          Download PDF
-        </a>
+          {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+          {downloading ? "Downloading..." : "Download PDF"}
+        </button>
       </div>
 
       <ReportCardPreview data={card} />

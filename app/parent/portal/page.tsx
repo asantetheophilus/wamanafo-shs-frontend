@@ -19,6 +19,9 @@ export default function ParentPortalPage() {
   const firstChild = children?.[0];
   const activeId   = selectedId || firstChild?.studentId || "";
   const { data: overview } = useChildOverview(activeId);
+  const reportCardsHref = activeId
+    ? `/parent/report-cards?studentId=${encodeURIComponent(activeId)}`
+    : "/parent/report-cards";
 
   if (isLoading) return (
     <div className="page-shell">
@@ -116,21 +119,21 @@ export default function ParentPortalPage() {
           <div className="px-6 py-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               {
-                href:  "/parent/report-cards",
+                href:  reportCardsHref,
                 icon:  FileText,
                 label: "Report Cards",
                 desc:  `${overview.publishedReportCards ?? 0} published this year`,
                 bg:    "bg-teal-50 text-teal-700",
               },
               {
-                href:  "/parent/report-cards",
+                href:  reportCardsHref,
                 icon:  BookOpen,
                 label: "Academic Scores",
                 desc:  "View term subject scores",
                 bg:    "bg-amber-50 text-amber-700",
               },
               {
-                href:  "/parent/report-cards",
+                href:  reportCardsHref,
                 icon:  ClipboardList,
                 label: "Attendance",
                 desc:  "View attendance summary",

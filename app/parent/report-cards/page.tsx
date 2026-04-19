@@ -61,7 +61,7 @@ export default function ParentReportCardsPage() {
           {list.map((card: ParentReportCardRow) => (
             <Link
               key={card.id}
-              href={`/parent/report-cards/${card.id}`}
+              href={`/parent/report-cards/${card.id}${activeId ? `?studentId=${activeId}` : ""}`}
               className="block card-flat px-6 py-5
                 hover:shadow-md hover:border-teal-300 transition-all group"
             >
