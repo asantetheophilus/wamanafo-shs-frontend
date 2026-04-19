@@ -1,5 +1,5 @@
 // ============================================================
-// Wamanafo SHS — Admin: New Student Page
+// Wamanafo SHS - Admin: New Student Page
 // ============================================================
 
 "use client";
@@ -13,10 +13,11 @@ import { apiFetch } from "@/lib/api-client";
 interface ClassOptionRow {
   id: string;
   name: string;
-  year: { id: string; name: string };
+  year?: { id: string; name: string };
+  yearId?: string;
+  yearName?: string;
 }
 
-/** Fetch classes and years for enrolment dropdowns */
 function useEnrolmentOptions() {
   const classes = useQuery({
     queryKey: ["classes", "options"],
@@ -41,19 +42,20 @@ export default function NewStudentPage() {
   const router = useRouter();
   const { classes, years } = useEnrolmentOptions();
 
-  const classOptions =
-    (classes.data?.items ?? []).map((c) => ({
+  const classOptions = (classes.data?.items ?? []).map((c) => {
+    const yearName = c.year?.name ?? c.yearName ?? "Unknown year";
+    return {
       value: c.id,
-      label: `${c.name} · ${c.year.name}`,
-      yearId: c.year.id,
-      yearLabel: c.year.name,
-    }));
+      label: `${c.name} - ${yearName}`,
+      yearId: c.year?.id ?? c.yearId,
+      yearLabel: yearName,
+    };
+  });
 
-  const yearOptions =
-    (years.data?.items ?? []).map((y: { id: string; name: string }) => ({
-      value: y.id,
-      label: y.name,
-    }));
+  const yearOptions = (years.data?.items ?? []).map((y: { id: string; name: string }) => ({
+    value: y.id,
+    label: y.name,
+  }));
 
   return (
     <div>
