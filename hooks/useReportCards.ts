@@ -45,10 +45,37 @@ export function useReportCard(id: string) {
   });
 }
 
-/** Returns direct URL to backend PDF endpoint with auth header embedded via token param */
-export function getReportCardPdfUrl(id: string): string {
+export async function downloadReportCardPdf(id: string): Promise<void> {
   const token = getToken();
-  return `${API_BASE}/api/v1/report-cards/${id}/pdf?token=${token ?? ""}`;
+  if (!token) {
+    throw new Error("Your session has expired. Please sign in again.");
+  }
+
+  const res = await fetch(`${API_BASE}/api/v1/report-cards/${id}/pdf`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(json.error ?? `Failed to download report card (${res.status}).`);
+  }
+
+  const blob = await res.blob();
+  const contentDisposition = res.headers.get("Content-Disposition") ?? "";
+  const filename =
+    contentDisposition.match(/filename="(.+?)"/)?.[1] ??
+    `report-card-${id}.pdf`;
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 export function useGenerateReportCards() {
