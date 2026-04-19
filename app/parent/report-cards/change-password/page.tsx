@@ -1,16 +1,5 @@
-"use client";
-import { ChangePasswordForm } from "@/components/shared/ChangePasswordForm";
+import { redirect } from "next/navigation";
 
-export default function ParentChangePasswordPage() {
-  return (
-    <div className="page-shell">
-      <div className="page-header mb-6">
-        <div>
-          <h1 className="page-title">Change Password</h1>
-          <p className="page-subtitle">Update your parent account password</p>
-        </div>
-      </div>
-      <ChangePasswordForm />
-    </div>
-  );
+export default function DeprecatedParentChangePasswordRoute() {
+  redirect("/parent/change-password");
 }
