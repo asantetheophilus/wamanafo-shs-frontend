@@ -3,14 +3,14 @@
 // ============================================================
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import {
   ClipboardList, BookOpen, GraduationCap, LogOut,
-  LayoutDashboard, UserCheck, Download, KeyRound, ChevronRight,
+  LayoutDashboard, UserCheck, Download, KeyRound, ChevronRight, Menu, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,10 +27,15 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
   const { user, loading, logout } = useAuth();
   const router   = useRouter();
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "TEACHER")) router.replace("/login");
   }, [user, loading, router]);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   if (loading || !user) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -39,8 +44,37 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
   );
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: "rgb(248,250,252)" }}>
-      <aside className="sidebar w-60 flex flex-col">
+    <div className="flex min-h-screen md:h-screen overflow-hidden" style={{ background: "rgb(248,250,252)" }}>
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+        <div className="min-w-0">
+          <p className="text-xs font-bold text-teal-700 uppercase tracking-[0.12em] truncate">Wamanafo SHS</p>
+          <p className="text-xs text-slate-500 truncate">Teacher Portal</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setMobileOpen((v) => !v)}
+          className="btn-icon btn-secondary"
+          aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+        >
+          {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+        </button>
+      </div>
+
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden fixed inset-0 z-40 bg-black/40"
+        />
+      )}
+
+      <aside
+        className={cn(
+          "sidebar w-60 flex flex-col fixed md:static inset-y-0 left-0 z-50 transition-transform duration-200",
+          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+        )}
+      >
         <div className="sidebar-brand">
           <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-amber-500/90 shrink-0">
             <GraduationCap className="w-5 h-5 text-white" />
@@ -78,7 +112,7 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
           </button>
         </div>
       </aside>
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      <main className="flex-1 overflow-y-auto pt-[60px] md:pt-0">{children}</main>
     </div>
   );
 }

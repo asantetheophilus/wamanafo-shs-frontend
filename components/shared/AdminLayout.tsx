@@ -3,6 +3,7 @@
 // ============================================================
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -11,7 +12,7 @@ import {
   LayoutDashboard, Users, GraduationCap, BookOpen,
   ClipboardList, FileText, BarChart2, Bell, LogOut,
   School, Settings, TrendingUp, Upload,
-  KeyRound, ChevronRight,
+  KeyRound, ChevronRight, Menu, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -52,11 +53,44 @@ interface AdminLayoutProps {
 export function AdminLayout({ children, userName, schoolName, schoolLogo }: AdminLayoutProps) {
   const { logout } = useAuth();
   const pathname   = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: "rgb(248,250,252)" }}>
+    <div className="flex min-h-screen md:h-screen overflow-hidden" style={{ background: "rgb(248,250,252)" }}>
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+        <div className="min-w-0">
+          <p className="text-xs font-bold text-teal-700 uppercase tracking-[0.12em] truncate">Wamanafo SHS</p>
+          <p className="text-xs text-slate-500 truncate">Admin Portal</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setMobileOpen((v) => !v)}
+          className="btn-icon btn-secondary"
+          aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+        >
+          {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+        </button>
+      </div>
+
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden fixed inset-0 z-40 bg-black/40"
+        />
+      )}
       {/* ── Sidebar ──────────────────────────────────── */}
-      <aside className="sidebar w-64 shrink-0 flex flex-col">
+      <aside
+        className={cn(
+          "sidebar w-64 shrink-0 flex flex-col fixed md:static inset-y-0 left-0 z-50 transition-transform duration-200",
+          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+        )}
+      >
         {/* Brand */}
         <div className="sidebar-brand">
           <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-amber-500/90 shrink-0 shadow-inner">
@@ -126,7 +160,7 @@ export function AdminLayout({ children, userName, schoolName, schoolLogo }: Admi
       </aside>
 
       {/* ── Main content ─────────────────────────────── */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto pt-[60px] md:pt-0">
         {children}
       </main>
     </div>

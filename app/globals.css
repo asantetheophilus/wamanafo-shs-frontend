@@ -75,7 +75,10 @@
 
   /* ── Page Shell ────────────────────────────────────── */
   .page-shell {
-    @apply px-6 py-7 space-y-6 max-w-screen-xl mx-auto;
+    @apply px-4 py-5 space-y-6 max-w-screen-xl mx-auto;
+  }
+  @media (min-width: 640px) {
+    .page-shell { @apply px-6 py-7; }
   }
   @media (min-width: 1024px) {
     .page-shell { @apply px-8 py-8; }
